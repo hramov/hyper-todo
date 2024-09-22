@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import HelloWorld from "./components/HelloWorld.vue";
-
-const hello = ref("");
-
-const drawer = ref(false);
+import Day from "./components/tabs/day/Day.vue";
+import Week from "./components/tabs/week/Week.vue";
+import AddTask from "./components/add-task/AddTask.vue";
 
 const tab = ref("one");
 
 const items = ref([]);
 
+const dialog = ref(false);
+
 onMounted(async () => {
-  fetch("/api/items")
+  fetch("http://localhost:5000/items")
     .then((res) => res.json())
     .then((data) => {
       items.value = data;
@@ -24,22 +24,12 @@ onMounted(async () => {
     <v-tabs v-model="tab" bg-color="dark" grow>
       <v-tab value="one">Day</v-tab>
       <v-tab value="two">Week</v-tab>
-      <v-tab value="three">Month</v-tab>
     </v-tabs>
 
     <v-card-text>
       <v-tabs-window v-model="tab">
-        <v-tabs-window-item value="one">
-          <v-list :items="items" lines="three" item-props style="padding: 0">
-            <template v-slot:subtitle="{ subtitle }">
-              <div v-html="subtitle"></div>
-            </template>
-          </v-list>
-        </v-tabs-window-item>
-
-        <v-tabs-window-item value="two"> Two </v-tabs-window-item>
-
-        <v-tabs-window-item value="three"> Three </v-tabs-window-item>
+        <v-tabs-window-item value="one"><Day /></v-tabs-window-item>
+        <v-tabs-window-item value="two"><Week /></v-tabs-window-item>
       </v-tabs-window>
     </v-card-text>
   </v-card>
@@ -48,5 +38,8 @@ onMounted(async () => {
     icon="mdi-plus"
     style="position: absolute; right: 20px; bottom: 20px"
     color="primary"
+    @click="dialog = true"
   ></v-btn>
+
+  <AddTask :dialog="dialog" @close="dialog = false" />
 </template>

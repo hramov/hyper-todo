@@ -9,6 +9,8 @@ async function bootstrap() {
   const app = await NestFactory.create(WebappModule);
   console.table(envConfig);
 
+  app.enableCors();
+
   if (!envConfig.BOT_TOKEN) {
     console.log('BOT_TOKEN is not set');
     process.exit(1);
