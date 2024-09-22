@@ -1,22 +1,12 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
 import Day from "./components/tabs/day/Day.vue";
 import Week from "./components/tabs/week/Week.vue";
 import AddTask from "./components/add-task/AddTask.vue";
 
 const tab = ref("one");
 
-const items = ref([]);
-
 const dialog = ref(false);
-
-onMounted(async () => {
-  fetch("http://localhost:5000/items")
-    .then((res) => res.json())
-    .then((data) => {
-      items.value = data;
-    });
-});
 </script>
 
 <template>

@@ -4,7 +4,7 @@ import { onMounted, ref } from "vue";
 const items = ref([]);
 
 onMounted(async () => {
-  fetch("http://localhost:5000/items")
+  fetch("https://webapp.hramovdev.ru/api/items")
     .then((res) => res.json())
     .then((data) => {
       items.value = data;
