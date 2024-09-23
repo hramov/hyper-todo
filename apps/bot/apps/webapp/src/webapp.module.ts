@@ -21,8 +21,8 @@ import { Category } from './entity/category.entity';
       synchronize: true,
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', '..', '..', 'public'),
-      serveRoot: '/public',
+      rootPath: join(__dirname, '..', '..', 'public'),
+      serveRoot: '/',
     }),
     TelegramModule,
   ],

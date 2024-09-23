@@ -17,6 +17,8 @@ async function bootstrap() {
     console.log('BOT_TOKEN is not set');
     process.exit(1);
   }
+
+  app.setGlobalPrefix('api');
   await app.listen(envConfig.PORT);
 }
 bootstrap();
