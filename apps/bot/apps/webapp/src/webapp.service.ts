@@ -1,7 +1,35 @@
 import { Injectable } from '@nestjs/common';
+import { EntityManager } from 'typeorm';
+import { User } from './entity/user.entity';
+import { Category } from './entity/category.entity';
+import { Task } from './entity/task.entity';
 
 @Injectable()
 export class WebappService {
+  constructor(private readonly em: EntityManager) {}
+
+  async createUser(dto: User): Promise<User> {
+    const existedUser = await this.em.findOne(User, {
+      where: { id: dto.id },
+    });
+
+    if (!existedUser) {
+      const user = this.em.create(User, dto);
+      return await this.em.save(user);
+    }
+
+    return existedUser;
+  }
+
+  async createTask(dto: Task): Promise<Task> {
+    const task = this.em.create(Task, dto);
+    return await this.em.save(task);
+  }
+
+  async categories(): Promise<Category[]> {
+    return await this.em.find(Category);
+  }
+
   getHello() {
     return {
       data: 'Hello World!',

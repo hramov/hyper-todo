@@ -94,6 +94,6 @@ const swipe = (direction: "Left" | "Right") => {
   align-items: center;
   margin-top: 10px;
   padding: 5px;
-  background-color: rgb(98, 136, 186);
+  background-color: rgb(126, 128, 131);
 }
 </style>

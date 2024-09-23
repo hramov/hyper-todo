@@ -5,7 +5,7 @@ import Task from "../../task/Task.vue";
 const items = ref([]);
 
 onMounted(async () => {
-  fetch("https://webapp.hramovdev.ru/api/items")
+  fetch(import.meta.env.VITE_APP_API_URL + "/api/items")
     .then((res) => res.json())
     .then((data) => {
       items.value = data;
@@ -14,15 +14,20 @@ onMounted(async () => {
 </script>
 
 <template>
-  <v-card-subtitle>Tasks for today</v-card-subtitle>
-  <v-list :items="items" lines="three" item-props style="padding: 0">
-    <Task
-      kind="ed"
-      title="Learn Vue"
-      description="Learn Vue Learn Vue Learn Vue Learn Vue Learn Vue"
-    />
-    <!-- <template v-slot:subtitle="{ subtitle }">
-      <div v-html="subtitle"></div>
-    </template> -->
-  </v-list>
+  <div>
+    <v-card-subtitle>Tasks for today</v-card-subtitle>
+    <v-list
+      :items="items"
+      lines="three"
+      item-props
+      style="padding: 0; background-color: rgb(57, 54, 50)"
+    >
+      <Task
+        v-for="i in 3"
+        kind="ed"
+        title="Learn Vue"
+        description="Learn Vue Learn Vue Learn Vue Learn Vue Learn Vue"
+      />
+    </v-list>
+  </div>
 </template>

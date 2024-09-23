@@ -1,11 +1,20 @@
 <script setup lang="ts">
 import { reactive } from "vue";
 
+import { useAppStore } from "@/store/app";
+
 const props = defineProps(["dialog"]);
 const emit = defineEmits(["save", "close"]);
 
+const appStore = useAppStore();
+
 const task = reactive({
   period: "ed",
+  cron_period: {
+    day: null,
+    month: null,
+    weekday: null,
+  },
   category: null,
   title: "",
   description: "",
@@ -14,6 +23,90 @@ const task = reactive({
   duration: null,
   deadline: null,
 });
+
+const daysOfWeek = [
+  {
+    label: "Monday",
+    value: 1,
+  },
+  {
+    label: "Tuesday",
+    value: 2,
+  },
+  {
+    label: "Wednesday",
+    value: 3,
+  },
+  {
+    label: "Thursday",
+    value: 4,
+  },
+  {
+    label: "Friday",
+    value: 5,
+  },
+  {
+    label: "Saturday",
+    value: 6,
+  },
+  {
+    label: "Sunday",
+    value: 0,
+  },
+];
+
+const daysOfMonth = Array.from(Array(32).keys()).filter((n) => n > 0);
+
+const months = [
+  {
+    label: "January",
+    value: 1,
+  },
+  {
+    label: "February",
+    value: 2,
+  },
+  {
+    label: "March",
+    value: 3,
+  },
+  {
+    label: "April",
+    value: 4,
+  },
+  {
+    label: "May",
+    value: 5,
+  },
+  {
+    label: "June",
+    value: 6,
+  },
+  {
+    label: "July",
+    value: 7,
+  },
+  {
+    label: "August",
+    value: 8,
+  },
+  {
+    label: "September",
+    value: 9,
+  },
+  {
+    label: "October",
+    value: 10,
+  },
+  {
+    label: "November",
+    value: 11,
+  },
+  {
+    label: "December",
+    value: 12,
+  },
+];
 </script>
 
 <template>
@@ -46,9 +139,41 @@ const task = reactive({
           >
             <v-tab value="ed">Every day</v-tab>
             <v-tab value="ew">Every week</v-tab>
+            <v-tab value="custom">Custom</v-tab>
           </v-tabs>
 
-          <v-select label="Category" v-model="task.category"></v-select>
+          <div style="display: flex; gap: 10px">
+            <v-select
+              v-model="task.cron_period.day"
+              :disabled="task.period !== 'custom'"
+              :items="daysOfMonth"
+              label="Day (month)"
+            />
+            <v-select
+              v-model="task.cron_period.month"
+              :items="months"
+              item-title="label"
+              item-value="value"
+              :disabled="task.period !== 'custom'"
+              label="Month"
+            />
+            <v-select
+              v-model="task.cron_period.weekday"
+              :disabled="task.period !== 'custom'"
+              :items="daysOfWeek"
+              item-title="label"
+              item-value="value"
+              label="Day (week)"
+            />
+          </div>
+
+          <v-select
+            label="Category"
+            v-model="task.category"
+            :items="appStore.categories"
+            item-title="title"
+            item-value="id"
+          ></v-select>
 
           <v-text-field
             v-model="task.title"
