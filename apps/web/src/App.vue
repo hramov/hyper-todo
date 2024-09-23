@@ -1,44 +1,57 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import Day from "./components/tabs/day/Day.vue";
-import Week from "./components/tabs/week/Week.vue";
 import AddTask from "./components/add-task/AddTask.vue";
 import axios from "axios";
 import { useAppStore } from "./store/store";
 
-const store = useAppStore();
+const appStore = useAppStore();
 const loaded = ref(true);
 const page = ref("tasks");
 const dialog = ref(false);
+const task = ref<any>({});
+
+const telegramData = ref<{ user?: any }>({});
 
 onMounted(async () => {
   loaded.value = false;
-  const telegramData = window.Telegram.WebApp?.initDataUnsafe;
-  await store.getUser(telegramData.user);
-  await store.getCategories();
+  telegramData.value = (window as any).Telegram.WebApp?.initDataUnsafe;
+  await appStore.getUser(telegramData.value.user);
+  await appStore.getCategories();
+  await appStore.getTasks();
   loaded.value = true;
 });
 
 const saveTask = async (task: any) => {
-  const response = await axios.post("/api/create-task", {
+  await axios.post("/api/create-task", {
     ...task,
-    user_id: store.user.id,
+    user_id: appStore.user.id,
   });
+  dialog.value = false;
+  await appStore.getTasks();
+};
+
+const openTask = (id: number) => {
+  task.value = appStore.tasks.find((task: any) => task.id === id);
+  if (task.value.id) {
+    dialog.value = true;
+  }
 };
 </script>
 
 <template>
   <div>
-    <v-card class="container">
+    <v-card class="container" v-if="appStore.user.id">
       <v-card-text>
-        <Day v-if="loaded" />
-        <v-skeleton-loader
-          style="background-color: rgb(126, 128, 131)"
-          type="card"
-          v-else
-        ></v-skeleton-loader>
+        <Day v-if="loaded" :tasks="appStore.tasks" @open="openTask" />
       </v-card-text>
     </v-card>
+
+    <v-skeleton-loader
+      style="background-color: rgb(126, 128, 131); margin: 20px"
+      type="card"
+      v-else
+    ></v-skeleton-loader>
 
     <v-layout class="overflow-visible" style="margin-top: 20px">
       <v-bottom-navigation grow v-model="page">
@@ -69,7 +82,16 @@ const saveTask = async (task: any) => {
       @click="dialog = true"
     ></v-btn>
 
-    <AddTask :dialog="dialog" @close="dialog = false" @save="saveTask" />
+    <AddTask
+      :dialog="dialog"
+      @close="
+        task = {};
+        dialog = false;
+      "
+      @save="saveTask"
+      :task="task"
+      :key="task.id"
+    />
   </div>
 </template>
 

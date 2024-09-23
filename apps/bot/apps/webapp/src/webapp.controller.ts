@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { WebappService } from './webapp.service';
 import { User } from './entity/user.entity';
 import { Task } from './entity/task.entity';
@@ -22,13 +22,8 @@ export class WebappController {
     return await this.webappService.createTask(task);
   }
 
-  @Get('hello')
-  getHello() {
-    return this.webappService.getHello();
-  }
-
-  @Get('items')
-  getItems() {
-    return this.webappService.getItems();
+  @Get('/tasks')
+  async tasks(@Query() params: { user_id: number }) {
+    return await this.webappService.tasks(params.user_id);
   }
 }

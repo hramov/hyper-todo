@@ -1,27 +1,28 @@
 <script setup lang="ts">
 import { reactive } from "vue";
 
-import { useAppStore } from "@/store/app";
+import { useAppStore } from "./../../store/store";
 
-const props = defineProps(["dialog"]);
+const props = defineProps(["dialog", "task"]);
 const emit = defineEmits(["save", "close"]);
 
 const appStore = useAppStore();
 
 const task = reactive({
-  period: "ed",
-  cron_period: {
+  id: props.task.id ?? null,
+  period: props.task.period ?? "ed",
+  cron_period: props.task.cron_period ?? {
     day: null,
     month: null,
     weekday: null,
   },
-  category: null,
-  title: "",
-  description: "",
-  date_start: new Date(),
-  date_end: new Date(),
-  duration: null,
-  deadline: null,
+  category: props.task.category ?? null,
+  title: props.task.title ?? "",
+  description: props.task.description ?? "",
+  date_start: props.task.date_start ?? new Date(),
+  date_end: props.task.date_end ?? new Date(),
+  duration: props.task.duration ?? null,
+  deadline: props.task.deadline ?? null,
 });
 
 const daysOfWeek = [
@@ -126,7 +127,11 @@ const months = [
           <v-spacer></v-spacer>
 
           <v-toolbar-items>
-            <v-btn text="Save" variant="text" @click="emit('save')"></v-btn>
+            <v-btn
+              text="Save"
+              variant="text"
+              @click="emit('save', task)"
+            ></v-btn>
           </v-toolbar-items>
         </v-toolbar>
 

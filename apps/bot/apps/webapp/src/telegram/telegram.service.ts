@@ -2,7 +2,6 @@ import * as TelegramBot from 'node-telegram-bot-api';
 import { envConfig } from '../config/env.config';
 
 export function initTelegramService() {
-  console.log(envConfig.BOT_TOKEN);
   const bot = new TelegramBot(envConfig.BOT_TOKEN, { polling: true });
 
   bot.on('message', (msg) => {
@@ -13,4 +12,6 @@ export function initTelegramService() {
       bot.sendMessage(chatId, 'Welcome');
     }
   });
+
+  return bot;
 }

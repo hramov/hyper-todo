@@ -32,10 +32,31 @@ export class Task {
   @Column()
   description: string;
 
+  @Column({ type: 'date', nullable: true })
+  date: Date;
+
+  @Column({ type: 'date' })
+  date_start: Date;
+
+  @Column({ type: 'date' })
+  date_end: Date;
+
+  @Column({ type: 'time' })
+  duration: Date;
+
+  @Column({ type: 'time' })
+  deadline: Date;
+
   @ManyToOne(() => User, (user) => user.tasks)
   @JoinColumn({
     name: 'user_id',
     referencedColumnName: 'id',
   })
   user: User;
+
+  @Column({ nullable: true })
+  status: string;
+
+  @Column({ type: 'boolean', nullable: true, default: () => false })
+  is_notified: boolean;
 }

@@ -83,6 +83,7 @@ const swipe = (direction: "Left" | "Right") => {
 }
 
 .content {
+  width: 100%;
   display: flex;
   justify-content: space-between;
 }

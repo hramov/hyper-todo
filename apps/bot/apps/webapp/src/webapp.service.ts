@@ -21,8 +21,66 @@ export class WebappService {
     return existedUser;
   }
 
-  async createTask(dto: Task): Promise<Task> {
-    const task = this.em.create(Task, dto);
+  async createTask(dto: any): Promise<Task> {
+    const user = await this.em.findOne(User, {
+      where: { id: dto.user_id },
+    });
+
+    function generateTasks(
+      period: number,
+      date_start: Date,
+      date_end: Date,
+    ): Task[] {
+      const tasks: Task[] = [];
+
+      let dt: number = date_start.valueOf();
+
+      while (dt <= date_end.valueOf()) {
+        tasks.push({
+          ...dto,
+          date: new Date(dt),
+        });
+
+        dt += period * 24 * 60 * 60 * 1000;
+      }
+
+      return tasks;
+    }
+
+    if (!dto.id) {
+      let tasks: Task[] = [];
+
+      if (dto.period === 'ew') {
+        tasks = generateTasks(
+          7,
+          new Date(dto.date_start),
+          new Date(dto.date_end),
+        );
+      } else if (dto.period === 'ed') {
+        tasks = generateTasks(
+          1,
+          new Date(dto.date_start),
+          new Date(dto.date_end),
+        );
+      } else {
+        // TODO generate tasks from cron syntax
+      }
+
+      for (let i = 0; i < tasks.length; i++) {
+        const task = this.em.create(Task, {
+          ...tasks[i],
+          user,
+        });
+        await this.em.save(task);
+      }
+
+      return tasks[0];
+    }
+
+    const task = this.em.create(Task, {
+      ...dto,
+      user,
+    });
     return await this.em.save(task);
   }
 
@@ -30,46 +88,15 @@ export class WebappService {
     return await this.em.find(Category);
   }
 
-  getHello() {
-    return {
-      data: 'Hello World!',
-    };
-  }
-
-  getItems() {
-    return [
-      {
-        prependAvatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-        title: 'Brunch this weekend?',
-        subtitle: `Lorem`,
+  async tasks(user_id: number): Promise<Task[]> {
+    return await this.em.find(Task, {
+      where: {
+        user: {
+          id: user_id,
+        },
+        date: new Date().toISOString().split('T')[0] as any,
       },
-      { type: 'divider', inset: true },
-      {
-        prependAvatar: 'https://cdn.vuetifyjs.com/images/lists/2.jpg',
-        title: 'Summer BBQ',
-        subtitle: `<span class="text-primary">to Alex, Scott, Jennifer</span> &mdash; Wish I could come, but I'm out of town this weekend.`,
-      },
-      { type: 'divider', inset: true },
-      {
-        prependAvatar: 'https://cdn.vuetifyjs.com/images/lists/3.jpg',
-        title: 'Oui oui',
-        subtitle:
-          '<span class="text-primary">Sandra Adams</span> &mdash; Do you have Paris recommendations? Have you ever been?',
-      },
-      { type: 'divider', inset: true },
-      {
-        prependAvatar: 'https://cdn.vuetifyjs.com/images/lists/4.jpg',
-        title: 'Birthday gift',
-        subtitle:
-          '<span class="text-primary">Trevor Hansen</span> &mdash; Have any ideas about what we should get Heidi for her birthday?',
-      },
-      { type: 'divider', inset: true },
-      {
-        prependAvatar: 'https://cdn.vuetifyjs.com/images/lists/5.jpg',
-        title: 'Recipe to try',
-        subtitle:
-          '<span class="text-primary">Britta Holt</span> &mdash; We should eat this: Grate, Squash, Corn, and tomatillo Tacos.',
-      },
-    ];
+      relations: { category: true },
+    });
   }
 }
