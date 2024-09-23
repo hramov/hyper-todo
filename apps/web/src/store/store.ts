@@ -12,6 +12,16 @@ export const useAppStore = defineStore("store", () => {
     tasks.value = response.data;
   };
 
+  const deleteTask = async (id: number) => {
+    const response = await axios.delete("/api/tasks/" + id);
+    return response;
+  };
+
+  const setCompleted = async (id: number) => {
+    const response = await axios.put("/api/tasks/complete/" + id);
+    return response;
+  };
+
   const getUser = async (dto: any) => {
     const response = await axios.post("/api/create-user", dto);
     user.value = response.data;
@@ -22,5 +32,22 @@ export const useAppStore = defineStore("store", () => {
     categories.value = response.data;
   };
 
-  return { categories, user, getUser, getCategories, getTasks, tasks };
+  const saveTask = async (task: any) => {
+    await axios.post("/api/create-task", {
+      ...task,
+      user_id: user.value.id,
+    });
+  };
+
+  return {
+    categories,
+    user,
+    getUser,
+    getCategories,
+    getTasks,
+    tasks,
+    setCompleted,
+    deleteTask,
+    saveTask,
+  };
 });

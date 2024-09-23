@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { ref } from "vue";
 
+const emit = defineEmits(["complete", "delete", "open"]);
+
 const props = defineProps([
-  "kind",
+  "id",
   "title",
   "description",
   "status",
-  "priority",
-  "dueDate",
-  "assignedTo",
-  "assignedBy",
+  "duration",
+  "deadline",
+  "category",
 ]);
 
 const doneButton = ref(false);
@@ -17,7 +18,7 @@ const deleteButton = ref(false);
 
 const swipe = (direction: "Left" | "Right") => {
   if (direction === "Right") {
-    if (!deleteButton.value) {
+    if (!deleteButton.value && props.status !== "completed") {
       doneButton.value = true;
     } else {
       deleteButton.value = false;
@@ -41,29 +42,39 @@ const swipe = (direction: "Left" | "Right") => {
       left: () => swipe('Left'),
       right: () => swipe('Right'),
     }"
+    :class="{
+      pending: props.status === 'pending',
+      expired: props.status === 'expired',
+      completed: props.status === 'completed',
+    }"
   >
-    <div class="content">
+    <div class="content" @click="emit('open', props.id)">
       <v-expand-transition
         ><v-btn
           v-if="doneButton"
           color="green"
-          style="height: 100px; width: 10%"
+          style="height: auto; width: 10%"
+          @click.stop="emit('complete', props.id)"
           ><v-icon>mdi-check</v-icon></v-btn
         ></v-expand-transition
       >
       <div class="description">
+        <small>#{{ props.category.title }}</small>
         <v-card-title>{{ props.title }}</v-card-title>
         <v-card-text>{{ props.description }}</v-card-text>
       </div>
       <div class="time">
-        <div><v-icon color="green">mdi-timer</v-icon> 01:00</div>
-        <div><v-icon color="red">mdi-timer-alert</v-icon> 21:00</div>
+        <div><v-icon color="green">mdi-timer</v-icon> {{ props.duration }}</div>
+        <div>
+          <v-icon color="red">mdi-timer-alert</v-icon> {{ props.deadline }}
+        </div>
       </div>
       <v-expand-transition
         ><v-btn
           v-if="deleteButton"
+          @click.stop="emit('delete', props.id)"
           color="red"
-          style="height: 100px; width: 10%"
+          style="height: auto; width: 10%"
           ><v-icon>mdi-delete</v-icon></v-btn
         ></v-expand-transition
       >
@@ -95,6 +106,16 @@ const swipe = (direction: "Left" | "Right") => {
   align-items: center;
   margin-top: 10px;
   padding: 5px;
-  background-color: rgb(126, 128, 131);
+}
+
+.completed {
+  background-color: rgb(147, 186, 137);
+}
+
+.pending {
+}
+
+.expired {
+  background-color: rgb(220, 119, 119);
 }
 </style>

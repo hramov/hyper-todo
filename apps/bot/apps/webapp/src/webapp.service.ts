@@ -99,4 +99,17 @@ export class WebappService {
       relations: { category: true },
     });
   }
+
+  async completeTask(task_id: number): Promise<number> {
+    await this.em.update(Task, task_id, {
+      status: 'completed',
+    });
+
+    return task_id;
+  }
+
+  async deleteTask(task_id: number): Promise<number> {
+    await this.em.delete(Task, task_id);
+    return task_id;
+  }
 }

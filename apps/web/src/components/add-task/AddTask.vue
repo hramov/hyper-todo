@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 
 import { useAppStore } from "./../../store/store";
 
@@ -108,6 +108,9 @@ const months = [
     value: 12,
   },
 ];
+
+const menu = ref(false);
+const menu2 = ref(false);
 </script>
 
 <template>
@@ -207,24 +210,49 @@ const months = [
               prepend-icon="mdi-calendar-check"
             ></v-date-input>
           </div>
-
           <div style="display: flex; gap: 10px">
             <v-text-field
               style="width: 45%"
               v-model="task.duration"
-              type="time"
+              :active="menu"
+              :focus="menu"
               label="Duration"
               required
-              prepend-icon="mdi-timer"
+              prepend-icon="mdi-timer-alert"
+            >
+              <v-menu
+                v-model="menu"
+                :close-on-content-click="false"
+                activator="parent"
+                transition="scale-transition"
+              >
+                <v-time-picker
+                  v-if="menu"
+                  v-model="task.duration"
+                  :hide-header="true"
+                ></v-time-picker> </v-menu
             ></v-text-field>
 
             <v-text-field
               style="width: 45%"
               v-model="task.deadline"
-              type="time"
+              :active="menu2"
+              :focus="menu2"
               label="Deadline"
               required
               prepend-icon="mdi-timer-alert"
+            >
+              <v-menu
+                v-model="menu2"
+                :close-on-content-click="false"
+                activator="parent"
+                transition="scale-transition"
+              >
+                <v-time-picker
+                  v-if="menu2"
+                  v-model="task.deadline"
+                  :hide-header="true"
+                ></v-time-picker> </v-menu
             ></v-text-field>
           </div>
         </v-form>

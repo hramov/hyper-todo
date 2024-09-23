@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { WebappService } from './webapp.service';
 import { User } from './entity/user.entity';
 import { Task } from './entity/task.entity';
@@ -20,6 +29,16 @@ export class WebappController {
   @Post('/create-task')
   async createTask(@Body() task: Task) {
     return await this.webappService.createTask(task);
+  }
+
+  @Put('/tasks/complete/:id')
+  async completeTask(@Param() id: number) {
+    return await this.webappService.completeTask(id);
+  }
+
+  @Delete('/tasks/:id')
+  async deleteTask(@Param() id: number) {
+    return await this.webappService.deleteTask(id);
   }
 
   @Get('/tasks')

@@ -2,7 +2,6 @@
 import { ref, onMounted } from "vue";
 import Day from "./components/tabs/day/Day.vue";
 import AddTask from "./components/add-task/AddTask.vue";
-import axios from "axios";
 import { useAppStore } from "./store/store";
 
 const appStore = useAppStore();
@@ -23,10 +22,7 @@ onMounted(async () => {
 });
 
 const saveTask = async (task: any) => {
-  await axios.post("/api/create-task", {
-    ...task,
-    user_id: appStore.user.id,
-  });
+  await appStore.saveTask(task);
   dialog.value = false;
   await appStore.getTasks();
 };
@@ -37,13 +33,29 @@ const openTask = (id: number) => {
     dialog.value = true;
   }
 };
+
+const completeTask = async (id: number) => {
+  await appStore.setCompleted(id);
+  await appStore.getTasks();
+};
+
+const deleteTask = async (id: number) => {
+  await appStore.deleteTask(id);
+  await appStore.getTasks();
+};
 </script>
 
 <template>
   <div>
     <v-card class="container" v-if="appStore.user.id">
       <v-card-text>
-        <Day v-if="loaded" :tasks="appStore.tasks" @open="openTask" />
+        <Day
+          v-if="loaded"
+          :tasks="appStore.tasks"
+          @open="openTask"
+          @complete="completeTask"
+          @delete="deleteTask"
+        />
       </v-card-text>
     </v-card>
 
