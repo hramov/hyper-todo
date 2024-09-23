@@ -38,6 +38,7 @@ export class WebappService {
       while (dt <= date_end.valueOf()) {
         tasks.push({
           ...dto,
+          status: 'pending',
           date: new Date(dt),
         });
 
