@@ -61,8 +61,13 @@ export class WebappService {
 
     if (!dto.id) {
       let tasks: Task[] = [];
-
-      if (dto.period === 'ew') {
+      if (dto.period === 'once') {
+        tasks = generateTasks(
+          1,
+          new Date(dto.date_start),
+          new Date(dto.date_start),
+        );
+      } else if (dto.period === 'ew') {
         tasks = generateTasks(
           7,
           new Date(dto.date_start),
@@ -83,7 +88,7 @@ export class WebappService {
           ...tasks[i],
           duration: this.timeToNumber(dto.duration),
           deadline: new Date(
-            new Date().toLocaleDateString('fr-CA') + 'T' + dto.deadline,
+            new Date().toLocaleDateString('fr-CA') + 'T' + dto.deadline + ':00',
           ).toISOString(),
           user,
         });

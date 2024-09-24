@@ -13,7 +13,8 @@
     "axios": "^1.7.7",
     "pinia": "^2.2.2",
     "vue": "^3.4.37",
-    "vuetify": "^3.7.2"
+    "vuetify": "^3.7.2",
+    "vuetify-more-component": "^1.4.1"
   },
   "devDependencies": {
     "@mdi/font": "^7.4.47",

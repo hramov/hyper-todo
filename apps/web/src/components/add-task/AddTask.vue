@@ -1,7 +1,17 @@
 <script setup lang="ts">
-import { reactive, ref } from "vue";
+import { reactive } from "vue";
 
 import { useAppStore } from "./../../store/store";
+
+const minutesToHoursAndMinutes = (time: number): string => {
+  const hours = Math.floor(time / 60);
+  const minutes = time % 60;
+  return `${loadZeros(hours)}:${loadZeros(minutes)}`;
+};
+
+const loadZeros = (duration: number) => {
+  return String(duration).length === 1 ? "0" + duration : duration;
+};
 
 const props = defineProps(["dialog", "task"]);
 const emit = defineEmits(["save", "close"]);
@@ -10,19 +20,27 @@ const appStore = useAppStore();
 
 const task = reactive({
   id: props.task.id ?? null,
-  period: props.task.period ?? "ed",
+  period: props.task.period ?? "once",
   cron_period: props.task.cron_period ?? {
     day: null,
     month: null,
     weekday: null,
   },
-  category: props.task.category ?? null,
+  category: props.task.category ?? 1,
   title: props.task.title ?? "",
   description: props.task.description ?? "",
   date_start: props.task.date_start ?? new Date(),
   date_end: props.task.date_end ?? new Date(),
-  duration: props.task.duration ?? null,
-  deadline: props.task.deadline ?? null,
+  duration: props.task.duration
+    ? minutesToHoursAndMinutes(props.task.duration)
+    : null,
+  deadline: props.task.deadline
+    ? new Date(props.task.deadline)
+        .toLocaleTimeString("ru")
+        .split(":")
+        .filter((_, index) => index < 2)
+        .join(":")
+    : null,
 });
 
 const daysOfWeek = [
@@ -109,8 +127,55 @@ const months = [
   },
 ];
 
-const menu = ref(false);
-const menu2 = ref(false);
+const validate = () => {
+  if (!task.duration || !task.deadline) {
+    return false;
+  }
+
+  if (task.duration.split(":").length !== 2) {
+    return false;
+  }
+
+  if (
+    Number(task.duration.split(":")[0]) > 24 ||
+    Number(task.duration.split(":")[0]) < 0
+  ) {
+    return false;
+  }
+
+  if (
+    Number(task.duration.split(":")[1]) > 59 ||
+    Number(task.duration.split(":")[1]) < 0
+  ) {
+    return false;
+  }
+
+  if (task.deadline.split(":").length !== 2) {
+    return false;
+  }
+
+  if (
+    Number(task.deadline.split(":")[0]) > 24 ||
+    Number(task.deadline.split(":")[0]) < 0
+  ) {
+    return false;
+  }
+
+  if (
+    Number(task.deadline.split(":")[1]) > 59 ||
+    Number(task.deadline.split(":")[1]) < 0
+  ) {
+    return false;
+  }
+
+  return true;
+};
+
+const sendTask = () => {
+  if (validate()) {
+    emit("save", task);
+  }
+};
 </script>
 
 <template>
@@ -125,16 +190,12 @@ const menu2 = ref(false);
         <v-toolbar>
           <v-btn icon="mdi-close" @click="emit('close')"></v-btn>
 
-          <v-toolbar-title>Add task</v-toolbar-title>
+          <v-toolbar-title>Задача</v-toolbar-title>
 
           <v-spacer></v-spacer>
 
           <v-toolbar-items>
-            <v-btn
-              text="Save"
-              variant="text"
-              @click="emit('save', task)"
-            ></v-btn>
+            <v-btn text="Сохранить" variant="text" @click="sendTask"></v-btn>
           </v-toolbar-items>
         </v-toolbar>
 
@@ -142,41 +203,38 @@ const menu2 = ref(false);
           <v-tabs
             v-model="task.period"
             bg-color="dark"
-            grow
             style="margin-bottom: 10px"
           >
-            <v-tab value="ed">Every day</v-tab>
-            <v-tab value="ew">Every week</v-tab>
-            <v-tab value="custom">Custom</v-tab>
+            <v-tab value="once">Разово</v-tab>
+            <v-tab value="ed">Ежедневно</v-tab>
+            <v-tab value="ew">Еженедельно</v-tab>
+            <v-tab value="custom" :disabled="true">Другое</v-tab>
           </v-tabs>
 
-          <div style="display: flex; gap: 10px">
+          <div style="display: flex; gap: 10px" v-if="task.period === 'custom'">
             <v-select
               v-model="task.cron_period.day"
-              :disabled="task.period !== 'custom'"
               :items="daysOfMonth"
-              label="Day (month)"
+              label="День (месяца)"
             />
             <v-select
               v-model="task.cron_period.month"
               :items="months"
               item-title="label"
               item-value="value"
-              :disabled="task.period !== 'custom'"
-              label="Month"
+              label="Месяц"
             />
             <v-select
               v-model="task.cron_period.weekday"
-              :disabled="task.period !== 'custom'"
               :items="daysOfWeek"
               item-title="label"
               item-value="value"
-              label="Day (week)"
+              label="День (недели)"
             />
           </div>
 
           <v-select
-            label="Category"
+            label="Категория"
             v-model="task.category"
             :items="appStore.categories"
             item-title="title"
@@ -185,27 +243,28 @@ const menu2 = ref(false);
 
           <v-text-field
             v-model="task.title"
-            label="Title"
+            label="Название"
             required
           ></v-text-field>
 
           <v-textarea
             v-model="task.description"
-            label="Description"
+            label="Описание"
             required
           ></v-textarea>
 
           <div style="display: flex; gap: 10px">
             <v-date-input
               v-model="task.date_start"
-              label="Date start"
+              label="Дата начала"
               required
               prepend-icon="mdi-calendar"
             ></v-date-input>
 
             <v-date-input
+              v-if="task.period !== 'once'"
               v-model="task.date_end"
-              label="Date end"
+              label="Дата окончания"
               required
               prepend-icon="mdi-calendar-check"
             ></v-date-input>
@@ -214,45 +273,19 @@ const menu2 = ref(false);
             <v-text-field
               style="width: 45%"
               v-model="task.duration"
-              :active="menu"
-              :focus="menu"
-              label="Duration"
+              label="Длительность"
               required
-              prepend-icon="mdi-timer-alert"
-            >
-              <v-menu
-                v-model="menu"
-                :close-on-content-click="false"
-                activator="parent"
-                transition="scale-transition"
-              >
-                <v-time-picker
-                  v-if="menu"
-                  v-model="task.duration"
-                  :hide-header="true"
-                ></v-time-picker> </v-menu
+              prepend-icon="mdi-timer"
+              placeholder="HH:MM"
             ></v-text-field>
 
             <v-text-field
               style="width: 45%"
               v-model="task.deadline"
-              :active="menu2"
-              :focus="menu2"
-              label="Deadline"
+              label="Дедлайн"
               required
               prepend-icon="mdi-timer-alert"
-            >
-              <v-menu
-                v-model="menu2"
-                :close-on-content-click="false"
-                activator="parent"
-                transition="scale-transition"
-              >
-                <v-time-picker
-                  v-if="menu2"
-                  v-model="task.deadline"
-                  :hide-header="true"
-                ></v-time-picker> </v-menu
+              placeholder="HH:MM"
             ></v-text-field>
           </div>
         </v-form>

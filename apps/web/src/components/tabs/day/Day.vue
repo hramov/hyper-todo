@@ -15,7 +15,7 @@ const pendingTasks = computed(() =>
 
 <template>
   <div>
-    <v-card-subtitle>Tasks for today</v-card-subtitle>
+    <v-card-subtitle>Задачи на сегодня</v-card-subtitle>
     <Task
       v-for="task in pendingTasks"
       :id="task.id"

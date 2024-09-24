@@ -32,10 +32,14 @@ const swipe = (direction: "Left" | "Right") => {
   }
 };
 
+const loadZeros = (duration: number) => {
+  return String(duration).length === 1 ? "0" + duration : duration;
+};
+
 const minutesToHoursAndMinutes = (time: number): string => {
   const hours = Math.floor(time / 60);
   const minutes = time % 60;
-  return `${hours}:${minutes}`;
+  return `${loadZeros(hours)}:${loadZeros(minutes)}`;
 };
 </script>
 
@@ -75,7 +79,14 @@ const minutesToHoursAndMinutes = (time: number): string => {
           {{ minutesToHoursAndMinutes(props.duration) }}
         </div>
         <div>
-          <v-icon color="red">mdi-timer-alert</v-icon> {{ props.deadline }}
+          <v-icon color="red">mdi-timer-alert</v-icon>
+          {{
+            new Date(props.deadline)
+              .toLocaleTimeString("ru")
+              .split(":")
+              .filter((_, index) => index < 2)
+              .join(":")
+          }}
         </div>
       </div>
       <v-expand-transition

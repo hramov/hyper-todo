@@ -10,6 +10,7 @@ import { aliases, mdi } from "vuetify/iconsets/mdi";
 import "@mdi/font/css/materialdesignicons.css";
 import { ru } from "vuetify/locale";
 import { createPinia } from "pinia";
+import "./style.css";
 
 const vuetify = createVuetify({
   theme: {

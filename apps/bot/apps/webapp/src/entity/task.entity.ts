@@ -44,7 +44,7 @@ export class Task {
   @Column({ type: 'integer' })
   duration: number;
 
-  @Column({ type: 'time' })
+  @Column({ type: 'timestamptz' })
   deadline: Date;
 
   @ManyToOne(() => User, (user: User) => user.tasks)
