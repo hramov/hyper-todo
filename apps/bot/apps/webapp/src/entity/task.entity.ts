@@ -16,10 +16,10 @@ export class Task {
   @Column()
   period: string;
 
-  @Column({ type: 'json', nullable: true })
+  @Column({ type: 'jsonb', nullable: true })
   cron_period: { day: number; month: number; weekday: number };
 
-  @ManyToOne(() => Category, (category) => category.tasks)
+  @ManyToOne(() => Category, (category: Category) => category.tasks)
   @JoinColumn({
     name: 'category_id',
     referencedColumnName: 'id',
@@ -41,13 +41,13 @@ export class Task {
   @Column({ type: 'date' })
   date_end: Date;
 
-  @Column({ type: 'time' })
-  duration: Date;
+  @Column({ type: 'integer' })
+  duration: number;
 
   @Column({ type: 'time' })
   deadline: Date;
 
-  @ManyToOne(() => User, (user) => user.tasks)
+  @ManyToOne(() => User, (user: User) => user.tasks)
   @JoinColumn({
     name: 'user_id',
     referencedColumnName: 'id',
@@ -57,6 +57,6 @@ export class Task {
   @Column({ nullable: true })
   status: string;
 
-  @Column({ type: 'boolean', nullable: true, default: () => false })
+  @Column({ type: 'boolean', nullable: true, default: 'false' })
   is_notified: boolean;
 }

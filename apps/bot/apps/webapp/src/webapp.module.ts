@@ -10,15 +10,20 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { User } from './entity/user.entity';
 import { Task } from './entity/task.entity';
 import { Category } from './entity/category.entity';
+import { envConfig } from './config/env.config';
 
 @Module({
   imports: [
     ScheduleModule.forRoot(),
     TypeOrmModule.forRoot({
-      type: 'sqlite',
-      database: 'db/sqlite.db',
+      type: 'postgres',
+      host: envConfig.PG_HOST,
+      port: envConfig.PG_PORT,
+      username: envConfig.PG_USERNAME,
+      password: envConfig.PG_PASSWORD,
+      database: envConfig.PG_DATABASE,
       entities: [User, Task, Category],
-      synchronize: true,
+      synchronize: false,
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'public'),

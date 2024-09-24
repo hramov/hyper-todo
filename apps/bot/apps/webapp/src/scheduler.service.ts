@@ -39,7 +39,7 @@ export class SchedulerService {
     const tasksToNotify = tasksForToday.filter((task: any) => {
       return (
         this.timeToNumber(now) >=
-        this.timeToNumber(task.deadline) - this.timeToNumber(task.duration)
+        this.timeToNumber(task.deadline) - task.duration
       );
     });
 

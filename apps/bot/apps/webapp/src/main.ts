@@ -1,6 +1,3 @@
-import { config } from 'dotenv';
-config();
-
 import { NestFactory } from '@nestjs/core';
 import { WebappModule } from './webapp.module';
 import { envConfig } from './config/env.config';

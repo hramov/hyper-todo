@@ -8,13 +8,24 @@ import { Task } from './entity/task.entity';
 export class WebappService {
   constructor(private readonly em: EntityManager) {}
 
+  private timeToNumber(time: string): number {
+    const [hours, minutes] = time.split(':');
+    return Number(hours) * 60 + Number(minutes);
+  }
+
   async createUser(dto: User): Promise<User> {
     const existedUser = await this.em.findOne(User, {
-      where: { id: dto.id },
+      where: { telegram_id: dto.id },
     });
 
     if (!existedUser) {
-      const user = this.em.create(User, dto);
+      const user = this.em.create(User, {
+        telegram_id: dto.id,
+        first_name: dto.first_name,
+        last_name: dto.last_name,
+        username: dto.username,
+        language_code: dto.language_code,
+      });
       return await this.em.save(user);
     }
 
@@ -70,8 +81,13 @@ export class WebappService {
       for (let i = 0; i < tasks.length; i++) {
         const task = this.em.create(Task, {
           ...tasks[i],
+          duration: this.timeToNumber(dto.duration),
+          deadline: new Date(
+            new Date().toLocaleDateString('fr-CA') + 'T' + dto.deadline,
+          ).toISOString(),
           user,
         });
+
         await this.em.save(task);
       }
 

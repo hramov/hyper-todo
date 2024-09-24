@@ -15,6 +15,6 @@ export class Category {
   @Column({ nullable: true })
   color: string;
 
-  @OneToMany(() => Task, (task) => task.category)
+  @OneToMany(() => Task, (task: Task) => task.category)
   tasks: Task[];
 }

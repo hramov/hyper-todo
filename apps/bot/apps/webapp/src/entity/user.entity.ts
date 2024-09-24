@@ -6,6 +6,9 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ type: 'integer' })
+  telegram_id: number;
+
   @Column()
   first_name: string;
 
@@ -18,9 +21,9 @@ export class User {
   @Column()
   language_code: string;
 
-  @Column({ type: 'date', default: () => `DATE('now')` })
+  @Column({ type: 'timestamptz', default: () => `now()` })
   created_at: Date;
 
-  @OneToMany(() => Task, (task) => task.user)
+  @OneToMany(() => Task, (task: Task) => task.user)
   tasks: Task[];
 }

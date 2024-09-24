@@ -31,6 +31,12 @@ const swipe = (direction: "Left" | "Right") => {
     }
   }
 };
+
+const minutesToHoursAndMinutes = (time: number): string => {
+  const hours = Math.floor(time / 60);
+  const minutes = time % 60;
+  return `${hours}:${minutes}`;
+};
 </script>
 
 <template>
@@ -64,7 +70,10 @@ const swipe = (direction: "Left" | "Right") => {
         <v-card-text>{{ props.description }}</v-card-text>
       </div>
       <div class="time">
-        <div><v-icon color="green">mdi-timer</v-icon> {{ props.duration }}</div>
+        <div>
+          <v-icon color="green">mdi-timer</v-icon>
+          {{ minutesToHoursAndMinutes(props.duration) }}
+        </div>
         <div>
           <v-icon color="red">mdi-timer-alert</v-icon> {{ props.deadline }}
         </div>
