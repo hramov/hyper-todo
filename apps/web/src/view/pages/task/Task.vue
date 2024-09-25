@@ -17,8 +17,8 @@ const task = ref<any>({});
 
 onMounted(async () => {
   loaded.value = false;
-  categoryStore.getCategories(accountStore.user.id);
-  taskStore.getTasks(accountStore.user.id);
+  await categoryStore.getCategories(accountStore.user.id);
+  await taskStore.getTasks(accountStore.user.id);
   loaded.value = true;
 });
 
