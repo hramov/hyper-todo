@@ -101,6 +101,10 @@ export class WebappService {
 
     const task = this.em.create(Task, {
       ...dto,
+      duration: this.timeToNumber(dto.duration),
+      deadline: new Date(
+        new Date().toLocaleDateString('fr-CA') + 'T' + dto.deadline + ':00',
+      ).toISOString(),
       user,
     });
     return await this.em.save(task);

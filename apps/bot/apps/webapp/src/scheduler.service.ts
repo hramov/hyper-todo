@@ -21,14 +21,15 @@ export class SchedulerService {
   }
 
   @Cron(CronExpression.EVERY_MINUTE)
-  async handleCron() {
+  async expiring() {
     const tasks = await this.em.query(`
       select t.*, u.telegram_id, to_char((deadline - now()), 'HH24:MI') as left
       from task t 
       join "user" u on t.user_id = u.id
       where t.is_notified is false
         and "date"::date = now()::date
-        and now() > deadline - (duration || 'minutes')::interval 
+        and now() > deadline - (duration || 'minutes')::interval
+        and deadline - now() > '00:00'::interval
     `);
 
     for (let i = 0; i < tasks.length; i++) {

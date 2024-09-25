@@ -251,6 +251,7 @@ const sendTask = () => {
             v-model="task.description"
             label="Описание"
             required
+            rows="3"
           ></v-textarea>
 
           <div style="display: flex; gap: 10px">
