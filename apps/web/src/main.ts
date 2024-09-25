@@ -1,41 +1,16 @@
-import { createApp } from "vue";
-import App from "./App.vue";
-
-import "vuetify/styles";
-import { createVuetify } from "vuetify";
-import * as components from "vuetify/components";
-import { VCalendar, VDateInput, VTimePicker } from "vuetify/labs/components";
-import * as directives from "vuetify/directives";
-import { aliases, mdi } from "vuetify/iconsets/mdi";
-import "@mdi/font/css/materialdesignicons.css";
-import { ru } from "vuetify/locale";
-import { createPinia } from "pinia";
 import "./style.css";
 
-const vuetify = createVuetify({
-  theme: {
-    defaultTheme: "dark",
-  },
-  icons: {
-    defaultSet: "mdi",
-    aliases,
-    sets: {
-      mdi,
-    },
-  },
-  components: {
-    ...components,
-    VDateInput,
-    VCalendar,
-    VTimePicker,
-  },
-  directives,
-  locale: {
-    locale: "ru",
-    messages: { ru },
-  },
-});
+import { createApp } from "vue";
+import App from "./view/App.vue";
 
-const pinia = createPinia();
+import { vuetify } from "./plugins/vuetify";
+import { router } from "./router";
+import { pinia } from "./store/index";
 
-createApp(App).use(vuetify).use(pinia).mount("#app");
+const app = createApp(App);
+
+app.use(vuetify);
+app.use(router);
+app.use(pinia);
+
+app.mount("#app");
