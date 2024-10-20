@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 import { Task } from './entity/task.entity';
 import { AccountService } from '../account/account.service';
+import { parseExpression } from 'cron-parser';
 
 @Injectable()
 export class TaskService {
@@ -84,7 +85,19 @@ export class TaskService {
           new Date(dto.date_end),
         );
       } else {
-        // TODO generate tasks from cron syntax
+        const interval = parseExpression(dto.cron_period);
+        const tasks: Task[] = [];
+
+        let dt: Date = new Date(dto.date_start);
+        while (dt <= new Date(dto.date_end)) {
+          tasks.push({
+            ...dto,
+            status: 'pending',
+            date: new Date(dt),
+          });
+
+          dt = interval.next().toDate();
+        }
       }
 
       for (let i = 0; i < tasks.length; i++) {

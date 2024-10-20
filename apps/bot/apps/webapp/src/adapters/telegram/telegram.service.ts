@@ -4,12 +4,12 @@ import { envConfig } from '../../config/env.config';
 export function initTelegramService() {
   const bot = new TelegramBot(envConfig.BOT_TOKEN, { polling: true });
 
-  bot.on('message', (msg) => {
+  bot.on('message', async (msg) => {
     const chatId = msg.chat.id;
     const body = msg.text;
 
     if (body === '/start') {
-      bot.sendMessage(chatId, 'Welcome');
+      await bot.sendMessage(chatId, 'Welcome');
     }
   });
 
